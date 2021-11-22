@@ -1,6 +1,7 @@
 {
   "name": "count-up",
   "private": true,
+  "main": "lib/index.js",
   "engines": {
     "node": "=16.13",
     "npm": "=8.1"
@@ -10,7 +11,7 @@
     "build": "webpack --env=prod",
     "lint": "eslint . --ext .js,.tsx,.ts"
   },
-  "dependencies": {
+  "peerDependencies": {
     "react": "^17.0.2",
     "react-dom": "^17.0.2"
   },

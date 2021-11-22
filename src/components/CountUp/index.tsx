@@ -14,7 +14,7 @@ type CountParams = {
   };
 };
 
-const count = (params: CountParams) => {
+function count(params: CountParams) {
   let current = 0;
 
   const { end, element, intervalStepTime } = params;
@@ -34,12 +34,12 @@ const count = (params: CountParams) => {
       clearInterval(timer);
     }
   }, intervalStepTime);
-};
+}
 
-const getIntervalStepTime = (params: {
+function getIntervalStepTime(params: {
   endNumber: number;
   duration: number;
-}) => {
+}) {
   const MINIMAL_INTERVAL_TIME = 4;
   const { duration, endNumber } = params;
 
@@ -55,13 +55,13 @@ const getIntervalStepTime = (params: {
   }
 
   return stepTime;
-};
+}
 
-const CountUp = (props: {
+export default function CountUp(props: {
   end: number,
   duration: number,
   className?: string,
-}) => {
+}) {
   const inputRef = useRef();
   const { end, duration, className } = props;
 
@@ -78,6 +78,4 @@ const CountUp = (props: {
   });
 
   return <span className={className} ref={inputRef} />;
-};
-
-export default CountUp;
+}
