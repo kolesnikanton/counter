@@ -8,8 +8,13 @@ ReactDOM.render(
     style={{
       display: 'flex',
       justifyContent: 'space-between',
-      maxWidth: '500px',
+      maxWidth: '800px',
+      fontWeight: 'bold',
       margin: '0 auto',
+      height: '100vh',
+      alignItems: 'center',
+      fontSize: '80px',
+      fontFamily: 'Helvetica',
     }}
   >
     <CountUp
