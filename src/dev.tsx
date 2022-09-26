@@ -1,34 +1,40 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import CountUp from './components/CountUp';
+import CountUp from './CountUp';
 
-ReactDOM.render(
-  <div
-    style={{
-      display: 'flex',
-      justifyContent: 'space-between',
-      maxWidth: '800px',
-      fontWeight: 'bold',
-      margin: '0 auto',
-      height: '100vh',
-      alignItems: 'center',
-      fontSize: '80px',
-      fontFamily: 'Helvetica',
-    }}
-  >
+import './dev.css';
+
+const Test = () => (
+  <div className="test">
     <CountUp
       end={100}
-      duration={2000}
+      duration={20000}
     />
     <CountUp
-      end={500}
-      duration={2000}
+      end={50}
+      duration={20000}
     />
     <CountUp
-      end={10.5}
-      duration={2000}
+      end={100}
+      duration={20000}
     />
-  </div>,
+    <CountUp
+      end={100}
+      duration={20000}
+    />
+    <CountUp
+      end={100}
+      duration={20000}
+    />
+    <CountUp
+      end={100}
+      duration={20000}
+    />
+  </div>
+);
+
+ReactDOM.render(
+  <Test />,
   document.getElementById('main'),
 );

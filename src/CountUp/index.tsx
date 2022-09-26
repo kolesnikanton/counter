@@ -1,4 +1,6 @@
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
+
+import './index.css';
 
 function isInt(n: number) {
   return n % 1 === 0;
@@ -26,9 +28,7 @@ function count(params: CountParams) {
       current += 1;
     }
 
-    if (element?.current) {
-      element.current.innerText = current;
-    }
+    element.current.innerText = current;
 
     if (current === end) {
       clearInterval(timer);
@@ -50,6 +50,7 @@ function getIntervalStepTime(params: {
     stepTime = duration / fromDecimalToInteger;
   }
 
+  // TODO: Send error
   if (stepTime < MINIMAL_INTERVAL_TIME) {
     return null;
   }
@@ -71,11 +72,18 @@ export default function CountUp(props: {
     return null;
   }
 
-  count({
-    end,
-    intervalStepTime,
-    element: inputRef,
-  });
+  useEffect(() => {
+    count({
+      end,
+      intervalStepTime,
+      element: inputRef,
+    });
+  }, []);
 
-  return <span className={className} ref={inputRef} />;
+  const defaultClassName = 'countup-number';
+  const classNames = className ? `${defaultClassName} ${className}` : defaultClassName;
+
+  return (
+    <span className={classNames} ref={inputRef} />
+  );
 }

@@ -1,14 +1,23 @@
 {
   "name": "count-up",
-  "private": true,
+  "description": "Number increase animation",
+  "version": "1.0.0-beta.1",
+  "license": "MIT",
   "main": "lib/index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kolesnikanton/count-up"
+  },
+  "bugs": {
+    "url": "https://github.com/kolesnikanton/count-up/issues"
+  },
   "engines": {
-    "node": "=16.13",
-    "npm": "=8.1"
+    "node": ">=16.13",
+    "npm": ">=8.1"
   },
   "scripts": {
-    "start": "webpack serve --env=dev",
-    "build": "webpack --env=prod",
+    "start": "webpack serve",
+    "babel": "npx babel src/CountUp/ --out-dir lib --copy-files --extensions '.tsx'",
     "lint": "eslint . --ext .js,.tsx,.ts"
   },
   "peerDependencies": {
@@ -16,11 +25,17 @@
     "react-dom": "^17.0.2"
   },
   "devDependencies": {
+    "@babel/cli": "^7.18.10",
+    "@babel/core": "^7.19.1",
+    "@babel/plugin-transform-typescript": "^7.19.1",
+    "@babel/preset-env": "^7.19.1",
+    "@babel/preset-react": "^7.18.6",
+    "@babel/preset-typescript": "^7.18.6",
     "@types/react": "^17.0.36",
     "@types/react-dom": "^17.0.11",
     "@typescript-eslint/eslint-plugin": "^5.4.0",
     "@typescript-eslint/parser": "^5.4.0",
-    "css-loader": "^6.5.0",
+    "css-loader": "^6.7.1",
     "eslint": "^8.3.0",
     "eslint-config-airbnb": "^19.0.0",
     "eslint-import-resolver-typescript": "^2.5.0",
@@ -35,5 +50,13 @@
     "webpack": "^5.61.0",
     "webpack-cli": "^4.9.1",
     "webpack-dev-server": "^4.4.0"
-  }
+  },
+  "keywords": [
+    "react",
+    "count-up",
+    "count",
+    "counter",
+    "up",
+    "increase"
+  ]
 }

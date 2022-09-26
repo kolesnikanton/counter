@@ -1,6 +1,6 @@
 # Count Up
 
-* Animation of increasing numbers
+* Number increase animation
 * Works with decimal numbers (but only with one number after the decimal point)
 * Without repeat
 * Starts from 0
