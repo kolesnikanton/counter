@@ -1,33 +1,33 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import CountUp from './CountUp';
+import Counter from './Counter';
 
 import './dev.css';
 
 const Test = () => (
   <div className="test">
-    <CountUp
+    <Counter
       end={100}
       duration={20000}
     />
-    <CountUp
+    <Counter
       end={50}
       duration={20000}
     />
-    <CountUp
+    <Counter
       end={100}
       duration={20000}
     />
-    <CountUp
+    <Counter
       end={100}
       duration={20000}
     />
-    <CountUp
+    <Counter
       end={100}
       duration={20000}
     />
-    <CountUp
+    <Counter
       end={100}
       duration={20000}
     />

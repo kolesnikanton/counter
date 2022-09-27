@@ -58,7 +58,7 @@ function getIntervalStepTime(params: {
   return stepTime;
 }
 
-export default function CountUp(props: {
+export default function Counter(props: {
   end: number,
   duration: number,
   className?: string,
@@ -80,7 +80,7 @@ export default function CountUp(props: {
     });
   }, []);
 
-  const defaultClassName = 'countup-number';
+  const defaultClassName = 'counter-number';
   const classNames = className ? `${defaultClassName} ${className}` : defaultClassName;
 
   return (
