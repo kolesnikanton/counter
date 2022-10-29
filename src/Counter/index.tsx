@@ -7,8 +7,10 @@ function isInt(n: number) {
 }
 
 type CountParams = {
+  start: number,
   end: number;
   intervalStepTime: number;
+  isDecrease: boolean,
   element: {
     current?: {
       innerText: number,
@@ -17,13 +19,20 @@ type CountParams = {
 };
 
 function count(params: CountParams) {
-  let current = 0;
+  const {
+    start, end, element, intervalStepTime, isDecrease,
+  } = params;
 
-  const { end, element, intervalStepTime } = params;
+  let current = start;
+  element.current.innerText = current;
 
   const timer = setInterval(() => {
-    if (!isInt(end)) {
-      current = Number((current + 0.1).toFixed(2));
+    if (!isInt(end) || !isInt(start)) {
+      current = isDecrease
+        ? Number((current - 0.1).toFixed(2))
+        : Number((current + 0.1).toFixed(2));
+    } else if (isDecrease) {
+      current -= 1;
     } else {
       current += 1;
     }
@@ -37,20 +46,25 @@ function count(params: CountParams) {
 }
 
 function getIntervalStepTime(params: {
+  startNumber: number,
   endNumber: number;
   duration: number;
+  isDecrease: boolean;
 }) {
-  const MINIMAL_INTERVAL_TIME = 4;
-  const { duration, endNumber } = params;
+  const MINIMAL_INTERVAL_TIME = 10;
 
-  let stepTime = Math.floor(duration / endNumber);
+  const {
+    duration, startNumber, endNumber, isDecrease,
+  } = params;
 
-  if (!isInt(endNumber)) {
-    const fromDecimalToInteger = endNumber * 10;
+  const number = isDecrease ? startNumber - endNumber : endNumber - startNumber;
+  let stepTime = Math.floor(duration / number);
+
+  if (!isInt(endNumber) || !isInt(startNumber)) {
+    const fromDecimalToInteger = number * 10;
     stepTime = duration / fromDecimalToInteger;
   }
 
-  // TODO: Send error
   if (stepTime < MINIMAL_INTERVAL_TIME) {
     return null;
   }
@@ -58,25 +72,49 @@ function getIntervalStepTime(params: {
   return stepTime;
 }
 
+function getErrorElement(errorMessage: string) {
+  return (
+    <h1 style={{ color: 'red' }}>
+      Error
+      {': '}
+      {errorMessage}
+    </h1>
+  );
+}
+
 export default function Counter(props: {
-  end: number,
+  start?: number,
+  end?: number,
   duration: number,
   className?: string,
 }) {
   const inputRef = useRef();
-  const { end, duration, className } = props;
 
-  const intervalStepTime = getIntervalStepTime({ endNumber: end, duration });
+  const {
+    start = 0, end = 0, duration, className,
+  } = props;
+
+  if (!start && !end) {
+    return getErrorElement('START & END VALUES ARE EMPTY');
+  }
+
+  const isDecrease = start > end;
+
+  const intervalStepTime = getIntervalStepTime({
+    startNumber: start, endNumber: end, duration, isDecrease,
+  });
 
   if (!intervalStepTime) {
-    return null;
+    return getErrorElement('TOO SMALL DURATION VALUE');
   }
 
   useEffect(() => {
     count({
+      start,
       end,
       intervalStepTime,
       element: inputRef,
+      isDecrease,
     });
   }, []);
 
