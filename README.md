@@ -5,6 +5,9 @@
 * Works with decimal numbers (but only with one number after the decimal point)
 * Without repeat
 
+## Demo
+See demo [HERE](https://antonkolesnik.com/counter/)
+
 ## Props:
 * `start (0 by default)`: A number to start the counter at
 * `end (0 by default)`: A number to stop the counter at

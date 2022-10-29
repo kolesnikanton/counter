@@ -13,7 +13,7 @@ type CountParams = {
   isDecrease: boolean,
   element: {
     current?: {
-      innerText: number,
+      innerText: string,
     }
   };
 };
@@ -24,20 +24,22 @@ function count(params: CountParams) {
   } = params;
 
   let current = start;
-  element.current.innerText = current;
+  element.current.innerText = String(current);
 
   const timer = setInterval(() => {
-    if (!isInt(end) || !isInt(start)) {
+    const isFloatRange = !isInt(end) || !isInt(start);
+
+    if (isFloatRange) {
       current = isDecrease
-        ? Number((current - 0.1).toFixed(2))
-        : Number((current + 0.1).toFixed(2));
-    } else if (isDecrease) {
-      current -= 1;
+        ? Number((current - 0.1).toFixed(1))
+        : Number((current + 0.1).toFixed(1));
     } else {
-      current += 1;
+      current = isDecrease ? current - 1 : current + 1;
     }
 
-    element.current.innerText = current;
+    element.current.innerText = isFloatRange
+      ? current.toFixed(1)
+      : String(current);
 
     if (current === end) {
       clearInterval(timer);
