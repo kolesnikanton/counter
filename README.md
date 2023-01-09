@@ -5,6 +5,17 @@
 * Works with decimal numbers (but only with one number after the decimal point)
 * Without repeat
 
+## Installation
+
+#### Install with NPM
+```
+npm install @antonkolesnik/counter
+```
+#### Install with Yarn
+```
+yarn add @antonkolesnik/counter
+```
+
 ## Demo
 See demo [HERE](https://antonkolesnik.com/counter/)
 

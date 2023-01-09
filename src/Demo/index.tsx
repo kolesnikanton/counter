@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 
 import Counter from '../Counter';
 
@@ -15,7 +15,4 @@ const Demo = () => (
   </div>
 );
 
-ReactDOM.render(
-  <Demo />,
-  document.getElementById('main'),
-);
+createRoot(document.getElementById('main')).render(<Demo />);
