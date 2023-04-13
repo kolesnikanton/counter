@@ -1,129 +1,154 @@
 import React, { useRef, useEffect } from 'react';
 
+import Error from './Error';
+import { isInt, getIntervalStepTime, getNextIntervalValue } from './utils';
+import { ERROR_MESSAGES, SMALL_DURATION_VALUE } from './constants';
+
 import './index.css';
 
-function isInt(n: number) {
-  return n % 1 === 0;
-}
-
-type CountParams = {
-  start: number,
-  end: number;
-  intervalStepTime: number;
-  isDecrease: boolean,
-  element: {
-    current?: {
-      innerText: string,
-    }
-  };
-};
-
-function count(params: CountParams) {
-  const {
-    start, end, element, intervalStepTime, isDecrease,
-  } = params;
-
-  let current = start;
-  element.current.innerText = String(current);
-
-  const timer = setInterval(() => {
-    const isFloatRange = !isInt(end) || !isInt(start);
-
-    if (isFloatRange) {
-      current = isDecrease
-        ? Number((current - 0.1).toFixed(1))
-        : Number((current + 0.1).toFixed(1));
-    } else {
-      current = isDecrease ? current - 1 : current + 1;
-    }
-
-    element.current.innerText = isFloatRange
-      ? current.toFixed(1)
-      : String(current);
-
-    if (current === end) {
-      clearInterval(timer);
-    }
-  }, intervalStepTime);
-}
-
-function getIntervalStepTime(params: {
-  startNumber: number,
-  endNumber: number;
-  duration: number;
-  isDecrease: boolean;
-}) {
-  const MINIMAL_INTERVAL_TIME = 10;
-
-  const {
-    duration, startNumber, endNumber, isDecrease,
-  } = params;
-
-  const number = isDecrease ? startNumber - endNumber : endNumber - startNumber;
-  let stepTime = Math.floor(duration / number);
-
-  if (!isInt(endNumber) || !isInt(startNumber)) {
-    const fromDecimalToInteger = number * 10;
-    stepTime = duration / fromDecimalToInteger;
-  }
-
-  if (stepTime < MINIMAL_INTERVAL_TIME) {
-    return null;
-  }
-
-  return stepTime;
-}
-
-function getErrorElement(errorMessage: string) {
-  return (
-    <h1 style={{ color: 'red' }}>
-      Error
-      {': '}
-      {errorMessage}
-    </h1>
-  );
-}
-
-export default function Counter(props: {
+export default function Counter({
+  duration,
+  start = 0,
+  end = 0,
+  className,
+  withAnimation,
+  fontSize = 150,
+}: {
+  duration: number,
   start?: number,
   end?: number,
-  duration: number,
   className?: string,
+  withAnimation?: boolean,
+  fontSize?: number,
 }) {
-  const inputRef = useRef();
+  const inputRef = useRef(null);
+  const isDecrease = start > end;
+  let currentInputValue: string;
 
-  const {
-    start = 0, end = 0, duration, className,
-  } = props;
+  function setInputPosition({
+    isInitial,
+    intervalStepTime,
+  }: {
+    isInitial: boolean,
+    intervalStepTime: number,
+  }) {
+    const transition = isInitial ? 'transform 0s' : `transform ${intervalStepTime / 2}ms`;
+    inputRef.current.children[0].style.transition = transition;
+    inputRef.current.children[1].style.transition = transition;
 
-  if (!start && !end) {
-    return getErrorElement('START & END VALUES ARE EMPTY');
+    const trasnlateValue = fontSize;
+    const currentElTranslate = isInitial
+      ? 'translate(0, 0)'
+      : `translate(0, ${isDecrease ? trasnlateValue : -trasnlateValue}px)`;
+
+    const nextElTranslate = isInitial
+      ? `translate(0, ${isDecrease ? -trasnlateValue : trasnlateValue}px)`
+      : 'translate(0, 0)';
+
+    inputRef.current.children[0].style.transform = currentElTranslate;
+    inputRef.current.children[1].style.transform = nextElTranslate;
   }
 
-  const isDecrease = start > end;
+  function setInitialValue(value: string) {
+    currentInputValue = value;
+    inputRef.current.children[0].innerText = value;
+  }
+
+  function changeInputValue(
+    nextInputValue: string,
+    intervalStepTime: number,
+    isFloatRange: boolean,
+  ) {
+    if (isFloatRange || !withAnimation) {
+      inputRef.current.children[0].innerText = nextInputValue;
+      return;
+    }
+
+    setInputPosition({ isInitial: true, intervalStepTime });
+    inputRef.current.children[0].innerText = currentInputValue;
+    inputRef.current.children[1].innerText = nextInputValue;
+
+    setTimeout(() => {
+      setInputPosition({ isInitial: false, intervalStepTime });
+    }, intervalStepTime / 2);
+
+    currentInputValue = nextInputValue;
+  }
+
+  function count({ intervalStepTime }: {
+    intervalStepTime: number;
+    element: any,
+  }) {
+    setInitialValue(String(start));
+
+    const isFloatRange = !isInt(end) || !isInt(start);
+    let currentIntervalValue = start;
+
+    const timer = setInterval(() => {
+      const nextIntervalValue = getNextIntervalValue({
+        isFloatRange,
+        isDecrease,
+        currentValue: currentIntervalValue,
+      });
+
+      changeInputValue(
+        isFloatRange ? nextIntervalValue.toFixed(1) : String(nextIntervalValue),
+        intervalStepTime,
+        isFloatRange,
+      );
+
+      if (nextIntervalValue === end) {
+        clearInterval(timer);
+      }
+
+      currentIntervalValue = nextIntervalValue;
+    }, intervalStepTime);
+  }
+
+  if (!start && !end) {
+    return <Error errorMessage={ERROR_MESSAGES.emptyStartEndValue} />;
+  }
 
   const intervalStepTime = getIntervalStepTime({
     startNumber: start, endNumber: end, duration, isDecrease,
   });
 
   if (!intervalStepTime) {
-    return getErrorElement('TOO SMALL DURATION VALUE');
+    return <Error errorMessage={ERROR_MESSAGES.smallDurationValue} />;
+  }
+
+  if (withAnimation && intervalStepTime < SMALL_DURATION_VALUE) {
+    return <Error errorMessage={ERROR_MESSAGES.smallDurationValue} />;
   }
 
   useEffect(() => {
     count({
-      start,
-      end,
       intervalStepTime,
       element: inputRef,
-      isDecrease,
     });
   }, []);
 
   const defaultClassName = 'counter-number';
   const classNames = className ? `${defaultClassName} ${className}` : defaultClassName;
+  const startLength = String(start).length;
+  const endLength = String(end).length;
+  const maxLength = startLength > endLength ? startLength : endLength;
+  const fontWidth = fontSize * 0.6;
+  const fontHeight = fontSize * 1.15;
+  const width = maxLength * fontWidth;
+
+  console.log({
+    startLength, endLength, maxLength, fontSize, width,
+  });
 
   return (
-    <span className={classNames} ref={inputRef} />
+    <div
+      ref={inputRef}
+      className={classNames}
+      style={{ fontSize, height: fontHeight, width }}
+    >
+      <div className="current" />
+      <div className="next" />
+    </div>
   );
 }
