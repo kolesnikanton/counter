@@ -137,10 +137,6 @@ export default function Counter({
   const fontHeight = fontSize * 1.15;
   const width = maxLength * fontWidth;
 
-  console.log({
-    startLength, endLength, maxLength, fontSize, width,
-  });
-
   return (
     <div
       ref={inputRef}
