@@ -1,4 +1,12 @@
 .counter-number {
-  font-size: 64px;
   font-weight: bold;
+  position: relative;
+  overflow: hidden;
+}
+
+.next,
+.current {
+  position: absolute;
+  transition-property: transform;
+  transition-timing-function: linear;
 }
