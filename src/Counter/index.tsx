@@ -2,7 +2,7 @@ import React, { useRef, useEffect } from 'react';
 
 import Error from './Error';
 import { isInt, getIntervalStepTime, getNextIntervalValue } from './utils';
-import { ERROR_MESSAGES, SMALL_DURATION_VALUE } from './constants';
+import { ERROR_MESSAGES, SMALL_DURATION_VALUE, DEFAULT_VALUES } from './constants';
 
 import './index.css';
 
@@ -12,7 +12,7 @@ export default function Counter({
   end = 0,
   className,
   withAnimation,
-  fontSize = 150,
+  fontSize = DEFAULT_VALUES.fontSize,
 }: {
   duration: number,
   start?: number,
@@ -23,7 +23,7 @@ export default function Counter({
 }) {
   const inputRef = useRef(null);
   const isDecrease = start > end;
-  let currentInputValue: string;
+  const currentInputValueRef = useRef('');
 
   function setInputPosition({
     isInitial,
@@ -50,7 +50,7 @@ export default function Counter({
   }
 
   function setInitialValue(value: string) {
-    currentInputValue = value;
+    currentInputValueRef.current = value;
     inputRef.current.children[0].innerText = value;
   }
 
@@ -65,19 +65,19 @@ export default function Counter({
     }
 
     setInputPosition({ isInitial: true, intervalStepTime });
-    inputRef.current.children[0].innerText = currentInputValue;
+    inputRef.current.children[0].innerText = currentInputValueRef.current;
     inputRef.current.children[1].innerText = nextInputValue;
 
     setTimeout(() => {
       setInputPosition({ isInitial: false, intervalStepTime });
     }, intervalStepTime / 2);
 
-    currentInputValue = nextInputValue;
+    currentInputValueRef.current = nextInputValue;
   }
 
   function count({ intervalStepTime }: {
     intervalStepTime: number;
-    element: any,
+    element: React.Ref<HTMLDivElement>,
   }) {
     setInitialValue(String(start));
 
@@ -122,11 +122,10 @@ export default function Counter({
   }
 
   useEffect(() => {
-    count({
-      intervalStepTime,
-      element: inputRef,
-    });
-  }, []);
+    if (inputRef.current) {
+      count({ intervalStepTime, element: inputRef });
+    }
+  }, [inputRef.current]);
 
   const defaultClassName = 'counter-number';
   const classNames = className ? `${defaultClassName} ${className}` : defaultClassName;

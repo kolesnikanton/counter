@@ -4,3 +4,6 @@ export const ERROR_MESSAGES = {
 };
 
 export const SMALL_DURATION_VALUE = 800;
+export const DEFAULT_VALUES = {
+  fontSize: 80,
+};

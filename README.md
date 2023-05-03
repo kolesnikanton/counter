@@ -1,9 +1,23 @@
 # Counter
+React number increase/decrease animation
 
 * Number increase animation (when start is less than end)
 * Number decrease animation (when start is greater than end)
 * Works with decimal numbers (only with one number after the decimal point)
 * Without repeat
+
+## Demo
+See demo [HERE](https://antonkolesnik.com/counter/)
+
+## Props:
+* `start (0 by default)`: A number to start the counter at
+* `end (0 by default)`: A number to stop the counter at
+* `duration (required)`: Time in ms to stop the counter
+* `className`: CSS class name to style the counter
+* `fontSize (80 by default)`
+* `withAnimation`: Smooth transition animation (Only with integer)
+
+![Animation](https://antonkolesnik.com/86a23ea2ed56d3b82a22.gif)
 
 ## Installation
 
@@ -15,19 +29,6 @@ npm install @antonkolesnik/counter
 ```
 yarn add @antonkolesnik/counter
 ```
-
-## Demo
-See demo [HERE](https://antonkolesnik.com/counter/)
-
-## Props:
-* `start (0 by default)`: A number to start the counter at
-* `end (0 by default)`: A number to stop the counter at
-* `duration (required)`: Time in ms to stop the counter
-* `className`: CSS class name to style the counter
-* `fontSize`
-* `withAnimation`: Smooth transition animation (Only with integer)
-
-![Animation](https://antonkolesnik.com/86a23ea2ed56d3b82a22.gif)
 
 ## Example:
 ```
