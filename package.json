@@ -1,8 +1,8 @@
 {
   "name": "@antonkolesnik/counter",
   "author": "Anton Kolesnik <kolesnikanton@icloud.com>",
-  "description": "Number increase/decrease animation",
-  "version": "1.0.0-beta.8",
+  "description": "React number increase/decrease animation",
+  "version": "1.0.0-beta.9",
   "license": "MIT",
   "main": "lib/index.js",
   "homepage": "https://antonkolesnik.com/counter/",
@@ -14,15 +14,18 @@
     "url": "https://github.com/kolesnikanton/counter/issues"
   },
   "engines": {
-    "node": ">=16.13",
-    "npm": ">=8.1"
+    "node": "=18",
+    "npm": "=9"
   },
   "scripts": {
     "start": "webpack serve",
-    "babel": "npx babel src/Counter/ --out-dir lib --delete-dir-on-start --copy-files --no-copy-ignored --extensions '.tsx,.js'",
+    "build:types": "tsc --emitDeclarationOnly",
+    "build:files": "npx babel src/Counter --out-dir lib --delete-dir-on-start --extensions .tsx,.js,.snap --ignore src/**/__tests__ --copy-files --no-copy-ignored",
+    "build": "npm run build:files && npm run build:types",
     "lint": "eslint . --ext .js,.tsx,.ts",
-    "prepare": "npm run babel",
-    "test": "jest src"
+    "prepublishOnly": "npm run build",
+    "test": "jest src",
+    "typecheck": "tsc --pretty --noEmit"
   },
   "peerDependencies": {
     "react": "^18.2.0",
@@ -68,9 +71,11 @@
   "keywords": [
     "react",
     "count-up",
-    "count",
+    "countup",
     "counter",
+    "count-down",
+    "countdown",
     "up",
-    "increase"
+    "animation"
   ]
 }

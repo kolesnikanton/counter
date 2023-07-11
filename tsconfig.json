@@ -1,11 +1,16 @@
 {
   "compilerOptions": {
     "noImplicitAny": true,
+    "strict": true,
     "module": "ESNext",
     "target": "ESNext",
     "jsx": "react",
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
-    "sourceMap": true
-  }
+    "sourceMap": true,
+    "outDir": "./lib",
+    "declaration": true,
+    "isolatedModules": true
+  },
+  "include": ["src/Counter/**/*"]
 }

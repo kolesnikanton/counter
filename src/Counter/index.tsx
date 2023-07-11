@@ -6,6 +6,7 @@ import { ERROR_MESSAGES, SMALL_DURATION_VALUE, DEFAULT_VALUES } from './constant
 
 import './index.css';
 
+/* eslint-disable no-param-reassign */
 export default function Counter({
   duration,
   start = 0,
@@ -21,20 +22,24 @@ export default function Counter({
   withAnimation?: boolean,
   fontSize?: number,
 }) {
-  const inputRef = useRef(null);
+  const inputRef = useRef<HTMLDivElement>(null);
   const isDecrease = start > end;
   const currentInputValueRef = useRef('');
 
   function setInputPosition({
     isInitial,
     intervalStepTime,
+    currentEl,
+    nextEl,
   }: {
-    isInitial: boolean,
-    intervalStepTime: number,
+    isInitial: boolean;
+    intervalStepTime: number;
+    currentEl: HTMLDivElement;
+    nextEl: HTMLDivElement;
   }) {
     const transition = isInitial ? 'transform 0s' : `transform ${intervalStepTime / 2}ms`;
-    inputRef.current.children[0].style.transition = transition;
-    inputRef.current.children[1].style.transition = transition;
+    currentEl.style.transition = transition;
+    nextEl.style.transition = transition;
 
     const trasnlateValue = fontSize;
     const currentElTranslate = isInitial
@@ -45,41 +50,56 @@ export default function Counter({
       ? `translate(0, ${isDecrease ? -trasnlateValue : trasnlateValue}px)`
       : 'translate(0, 0)';
 
-    inputRef.current.children[0].style.transform = currentElTranslate;
-    inputRef.current.children[1].style.transform = nextElTranslate;
+    currentEl.style.transform = currentElTranslate;
+    nextEl.style.transform = nextElTranslate;
   }
 
-  function setInitialValue(value: string) {
+  function setInitialValue(value: string, currentEl: HTMLDivElement) {
     currentInputValueRef.current = value;
-    inputRef.current.children[0].innerText = value;
+    currentEl.innerText = value;
   }
 
   function changeInputValue(
     nextInputValue: string,
     intervalStepTime: number,
     isFloatRange: boolean,
+    currentEl: HTMLDivElement,
+    nextEl: HTMLDivElement,
   ) {
     if (isFloatRange || !withAnimation) {
-      inputRef.current.children[0].innerText = nextInputValue;
+      currentEl.innerText = nextInputValue;
       return;
     }
 
-    setInputPosition({ isInitial: true, intervalStepTime });
-    inputRef.current.children[0].innerText = currentInputValueRef.current;
-    inputRef.current.children[1].innerText = nextInputValue;
+    setInputPosition({
+      isInitial: true,
+      intervalStepTime,
+      currentEl,
+      nextEl,
+    });
+    currentEl.innerText = currentInputValueRef.current;
+    nextEl.innerText = nextInputValue;
 
     setTimeout(() => {
-      setInputPosition({ isInitial: false, intervalStepTime });
+      setInputPosition({
+        isInitial: false,
+        intervalStepTime,
+        currentEl,
+        nextEl,
+      });
     }, intervalStepTime / 2);
 
     currentInputValueRef.current = nextInputValue;
   }
 
-  function count({ intervalStepTime }: {
+  function count({ intervalStepTime, counterEl }: {
     intervalStepTime: number;
-    element: React.Ref<HTMLDivElement>,
+    counterEl: HTMLDivElement;
   }) {
-    setInitialValue(String(start));
+    const currentEl = counterEl.children[0] as HTMLDivElement;
+    const nextEl = counterEl.children[1] as HTMLDivElement;
+
+    setInitialValue(String(start), currentEl);
 
     const isFloatRange = !isInt(end) || !isInt(start);
     let currentIntervalValue = start;
@@ -95,6 +115,8 @@ export default function Counter({
         isFloatRange ? nextIntervalValue.toFixed(1) : String(nextIntervalValue),
         intervalStepTime,
         isFloatRange,
+        currentEl,
+        nextEl,
       );
 
       if (nextIntervalValue === end) {
@@ -122,10 +144,15 @@ export default function Counter({
   }
 
   useEffect(() => {
-    if (inputRef.current) {
-      count({ intervalStepTime, element: inputRef });
+    if (!inputRef.current) {
+      return;
     }
-  }, [inputRef.current]);
+
+    count({
+      intervalStepTime,
+      counterEl: inputRef.current,
+    });
+  }, []);
 
   const defaultClassName = 'counter-number';
   const classNames = className ? `${defaultClassName} ${className}` : defaultClassName;
