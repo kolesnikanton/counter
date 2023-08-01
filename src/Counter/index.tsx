@@ -4,8 +4,6 @@ import Error from './Error';
 import { isInt, getIntervalStepTime, getNextIntervalValue } from './utils';
 import { ERROR_MESSAGES, SMALL_DURATION_VALUE, DEFAULT_VALUES } from './constants';
 
-import './index.css';
-
 /* eslint-disable no-param-reassign */
 export default function Counter({
   duration,

@@ -30,6 +30,11 @@ npm install @antonkolesnik/counter
 yarn add @antonkolesnik/counter
 ```
 
+## Stylesheets
+```
+import '@antonkolesnik/counter/lib/styles.css';
+```
+
 ## Example:
 ```
 <Counter fontSize={50} start={100} duration={10000} />
