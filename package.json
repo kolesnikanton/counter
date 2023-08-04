@@ -2,7 +2,7 @@
   "name": "@antonkolesnik/counter",
   "author": "Anton Kolesnik <kolesnikanton@icloud.com>",
   "description": "React number increase/decrease animation",
-  "version": "1.0.0-beta.10",
+  "version": "1.0.0-beta.11",
   "license": "MIT",
   "main": "lib/index.js",
   "homepage": "https://antonkolesnik.com/counter/",
@@ -14,8 +14,8 @@
     "url": "https://github.com/kolesnikanton/counter/issues"
   },
   "engines": {
-    "node": "=18",
-    "npm": "=9"
+    "node": ">=16",
+    "npm": ">=7"
   },
   "scripts": {
     "start": "webpack serve",

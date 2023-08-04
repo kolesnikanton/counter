@@ -22,25 +22,32 @@ See demo [HERE](https://antonkolesnik.com/counter/)
 ## Installation
 
 #### Install with NPM
-```
+```bash
 npm install @antonkolesnik/counter
 ```
 #### Install with Yarn
-```
+```bash
 yarn add @antonkolesnik/counter
 ```
 
 ## Stylesheets
-```
+```js
 import '@antonkolesnik/counter/lib/styles.css';
 ```
 
 ## Example:
-```
-<Counter fontSize={50} start={100} duration={10000} />
-<Counter end={500} duration={10000} />
-<Counter start={200} end={50} duration={10000} />
-<Counter start={100} end={200} duration={10000} />
-<Counter start={1.2} end={10.5} duration={10000} />
-<Counter withAnimation fontSize={80} start={200} end={100} duration={100000} />
+```js
+import Counter from '@antonkolesnik/counter';
+import '@antonkolesnik/counter/lib/styles.css';
+
+const Demo = () => (
+  <div>
+    <Counter fontSize={50} start={100} duration={10000} />
+    <Counter end={500} duration={10000} />
+    <Counter start={200} end={50} duration={10000} />
+    <Counter start={100} end={200} duration={10000} />
+    <Counter start={1.2} end={10.5} duration={10000} />
+    <Counter withAnimation fontSize={80} start={200} end={100} duration={100000} />
+  </div>
+);
 ```
