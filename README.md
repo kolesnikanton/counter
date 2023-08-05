@@ -17,7 +17,7 @@ See demo [HERE](https://antonkolesnik.com/counter/)
 * `fontSize (80 by default)`
 * `withAnimation`: Smooth transition animation (Only with integer)
 
-![Animation](https://antonkolesnik.com/86a23ea2ed56d3b82a22.gif)
+![Animation](https://drive.google.com/uc?id=1eWNUINVdZEOpwuDtAEl7JKqskMde3kY3)
 
 ## Installation
 
