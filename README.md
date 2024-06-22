@@ -18,7 +18,7 @@ See demo [HERE](https://antonkolesnik.com/counter/)
 * `withAnimation`: Smooth transition animation
 * `decimals`
 
-![Animation](https://drive.google.com/uc?id=1eWNUINVdZEOpwuDtAEl7JKqskMde3kY3)
+![Animation](https://raw.githubusercontent.com/kolesnikanton/counter/master/static/animation.gif)
 
 ## Installation
 
