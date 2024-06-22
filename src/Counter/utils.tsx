@@ -1,40 +1,71 @@
-export function isInt(n: number) {
-  return n % 1 === 0;
+export function isFloat(str: string): boolean {
+  return str.includes('.');
 }
 
 export function getIntervalStepTime({
-  duration, startNumber, endNumber, isDecrease,
+  duration, startNumber, endNumber, isDecrease, decimals,
 }: {
-  startNumber: number,
-  endNumber: number;
+  startNumber: string,
+  endNumber: string;
   duration: number;
   isDecrease: boolean;
-}) {
-  const MINIMAL_INTERVAL_TIME = 10;
+  decimals: number;
+}): number {
+  const start = Number(startNumber);
+  const end = Number(endNumber);
 
-  const number = isDecrease ? startNumber - endNumber : endNumber - startNumber;
-  let stepTime = Math.floor(duration / number);
+  // Calculate how many operations we need to make before setInterval is finished
+  const operations = isDecrease ? start - end : end - start;
 
-  if (!isInt(endNumber) || !isInt(startNumber)) {
-    const fromDecimalToInteger = number * 10;
-    stepTime = duration / fromDecimalToInteger;
+  if (isFloat(endNumber) || isFloat(startNumber)) {
+    // Multiply operations by number after point
+    // decimals * 10 - operations after point
+    const operationsWithFloat = operations * decimals * 10;
+    return duration / operationsWithFloat;
   }
 
-  if (stepTime < MINIMAL_INTERVAL_TIME) {
-    return null;
-  }
-
-  return stepTime;
+  return Math.floor(duration / operations);
 }
 
-export function getNextIntervalValue({ isFloatRange, isDecrease, currentValue }: {
+export function isIntervalEnd({
+  nextIntervalValue,
+  end,
+  decimals,
+}: {
+  nextIntervalValue: string,
+  end: string,
+  decimals: number
+}): boolean {
+  // For a case where start = *.0 and end = *.01
+  return nextIntervalValue === Number(end).toFixed(decimals);
+}
+
+export function getDecimals({ start, end }: {
+  start: string,
+  end: string,
+}): number {
+  const startDecimals = isFloat(start) ? start.split('.')[1].length : 0;
+  const endDecimals = isFloat(end) ? end.split('.')[1].length : 0;
+
+  return startDecimals > endDecimals ? startDecimals : endDecimals;
+}
+
+export function getNextIntervalValue({
+  isFloatRange, currentValue, decimals, operation,
+}: {
   isFloatRange: boolean,
-  isDecrease: boolean,
   currentValue: number,
-}) {
-  if (isDecrease) {
-    return isFloatRange ? Number((currentValue - 0.1).toFixed(1)) : currentValue - 1;
+  decimals: number,
+  operation: number,
+  // factor: number,
+}): string {
+  if (isFloatRange) {
+    const factor = 10 ** decimals;
+    // operation / factor = 0.1, 0.001, 0,0001... (Depends on decimals)
+    const result = (currentValue + operation / factor).toFixed(decimals);
+    return result;
   }
 
-  return isFloatRange ? Number((currentValue + 0.1).toFixed(1)) : currentValue + 1;
+  const result = currentValue + operation;
+  return String(result);
 }

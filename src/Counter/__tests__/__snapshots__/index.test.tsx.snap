@@ -2,13 +2,9 @@
 
 exports[`render - duration error 1`] = `
 <div>
-  <h1
-    style="color: red;"
-  >
-    Error
-    : 
-    TOO SMALL DURATION VALUE
-  </h1>
+  <span>
+    Error: Too small duration value
+  </span>
 </div>
 `;
 
@@ -16,13 +12,15 @@ exports[`render - with animation 1`] = `
 <div>
   <div
     class="counter-number"
-    style="font-size: 80px; height: 92px; width: 144px;"
+    style="font-size: 80px; height: 92px;"
   >
     <div
       class="current"
+      style="height: 92px;"
     />
     <div
       class="next"
+      style="height: 92px;"
     />
   </div>
 </div>
@@ -30,13 +28,9 @@ exports[`render - with animation 1`] = `
 
 exports[`render - without numbers error 1`] = `
 <div>
-  <h1
-    style="color: red;"
-  >
-    Error
-    : 
-    START & END VALUES ARE EMPTY
-  </h1>
+  <span>
+    Error: Start and end props are empty
+  </span>
 </div>
 `;
 
@@ -44,13 +38,15 @@ exports[`render 1`] = `
 <div>
   <div
     class="counter-number"
-    style="font-size: 50px; height: 57.49999999999999px; width: 120px;"
+    style="font-size: 50px; height: 57.49999999999999px;"
   >
     <div
       class="current"
+      style="height: 57.49999999999999px;"
     />
     <div
       class="next"
+      style="height: 57.49999999999999px;"
     />
   </div>
 </div>

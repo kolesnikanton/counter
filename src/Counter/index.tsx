@@ -1,52 +1,91 @@
 import React, { useRef, useEffect } from 'react';
+import { combineStrings } from '@antonkolesnik/utils';
 
-import Error from './Error';
-import { isInt, getIntervalStepTime, getNextIntervalValue } from './utils';
-import { ERROR_MESSAGES, SMALL_DURATION_VALUE, DEFAULT_VALUES } from './constants';
+import {
+  isFloat,
+  getIntervalStepTime,
+  getNextIntervalValue,
+  getDecimals,
+  isIntervalEnd,
+} from './utils';
 
+import {
+  ERROR_MESSAGES, MINIMAL_ANIMATION_INTERVAL_TIME, DEFAULT_VALUES, MINIMAL_INTERVAL_TIME,
+} from './constants';
+
+// TODO: Add handleStop
 /* eslint-disable no-param-reassign */
 export default function Counter({
   duration,
-  start = 0,
-  end = 0,
+  start = '0',
+  end = '0',
   className,
   withAnimation,
   fontSize = DEFAULT_VALUES.fontSize,
+  decimals: decimalsProp,
 }: {
   duration: number,
-  start?: number,
-  end?: number,
+  start?: string,
+  end?: string,
   className?: string,
   withAnimation?: boolean,
   fontSize?: number,
+  decimals?: number,
 }) {
   const inputRef = useRef<HTMLDivElement>(null);
-  const isDecrease = start > end;
-  const currentInputValueRef = useRef('');
+  const currentInputValueRef = useRef<string>('');
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Value after point
+  const decimals = decimalsProp || getDecimals({ start, end });
+  const isFloatRange = isFloat(end) || isFloat(start);
+  const isDecrease = Number(start) > Number(end);
+  const operation = isDecrease ? -1 : 1;
+  const fontHeight = fontSize * 1.15;
+  const intervalStepTime = getIntervalStepTime({
+    startNumber: start, endNumber: end, duration, isDecrease, decimals,
+  });
+  // We can't make it slowly than intervalStepTime / 2,
+  // because we will not have time to see the animation
+  const ANIMATION_SPEED = intervalStepTime / 2;
 
   function setInputPosition({
     isInitial,
-    intervalStepTime,
     currentEl,
     nextEl,
   }: {
     isInitial: boolean;
-    intervalStepTime: number;
     currentEl: HTMLDivElement;
     nextEl: HTMLDivElement;
   }) {
-    const transition = isInitial ? 'transform 0s' : `transform ${intervalStepTime / 2}ms`;
+    // Show the translate changes slowly
+    // intervalStepTime / 2 - Show it at the same time as intervalStepTime, but smoother
+    const transition = isInitial ? 'transform 0s' : `transform ${ANIMATION_SPEED}ms`;
     currentEl.style.transition = transition;
     nextEl.style.transition = transition;
 
-    const trasnlateValue = fontSize;
     const currentElTranslate = isInitial
+      // Go back and wait for the next transition
       ? 'translate(0, 0)'
-      : `translate(0, ${isDecrease ? trasnlateValue : -trasnlateValue}px)`;
+      // The current element goes down/up depends on isDecrease
+      : `translate(0, ${isDecrease ? fontHeight : -fontHeight}px)`;
 
     const nextElTranslate = isInitial
-      ? `translate(0, ${isDecrease ? -trasnlateValue : trasnlateValue}px)`
-      : 'translate(0, 0)';
+      /*
+        isDecrease: move nextEl above currentEl:
+        * 2 - position of currentEl + one more
+        !isDecrease: do nothing
+        isInitial: go back and wait for the next transition
+      */
+      ? `translate(0, ${isDecrease ? -fontHeight * 2 : 0}px)`
+      /*
+        Move nextEl to the currentEl position
+        0 - current nextEl position, we don't see it
+        0 - fontHeight = goes up
+        fontHeight*2 - fontHeight = goes down
+      */
+      : `translate(0, ${-fontHeight}px)`;
 
     currentEl.style.transform = currentElTranslate;
     nextEl.style.transform = nextElTranslate;
@@ -59,116 +98,118 @@ export default function Counter({
 
   function changeInputValue(
     nextInputValue: string,
-    intervalStepTime: number,
-    isFloatRange: boolean,
     currentEl: HTMLDivElement,
     nextEl: HTMLDivElement,
   ) {
-    if (isFloatRange || !withAnimation) {
-      currentEl.innerText = nextInputValue;
-      return;
-    }
+    if (withAnimation) {
+      // Set nextInputValue from the previous call
+      // or currentValue from setInitialValue
+      currentEl.innerText = currentInputValueRef.current;
+      nextEl.innerText = nextInputValue;
 
-    setInputPosition({
-      isInitial: true,
-      intervalStepTime,
-      currentEl,
-      nextEl,
-    });
-    currentEl.innerText = currentInputValueRef.current;
-    nextEl.innerText = nextInputValue;
+      // This is for currentEl.innerText
+      // when changeInputValue will be called again
+      currentInputValueRef.current = nextInputValue;
 
-    setTimeout(() => {
+      // Go back to inital translate values
       setInputPosition({
-        isInitial: false,
-        intervalStepTime,
+        isInitial: true,
         currentEl,
         nextEl,
       });
-    }, intervalStepTime / 2);
 
-    currentInputValueRef.current = nextInputValue;
+      // Start animation here
+      const timeout = setTimeout(() => {
+        setInputPosition({
+          isInitial: false,
+          currentEl,
+          nextEl,
+        });
+      }, ANIMATION_SPEED);
+
+      // To clear when unmount
+      timeoutRef.current = timeout;
+      return;
+    }
+
+    currentEl.innerText = nextInputValue;
   }
 
-  function count({ intervalStepTime, counterEl }: {
-    intervalStepTime: number;
+  function count({ counterEl }: {
     counterEl: HTMLDivElement;
   }) {
     const currentEl = counterEl.children[0] as HTMLDivElement;
     const nextEl = counterEl.children[1] as HTMLDivElement;
 
-    setInitialValue(String(start), currentEl);
+    // To see the first start value before changing
+    setInitialValue(start, currentEl);
 
-    const isFloatRange = !isInt(end) || !isInt(start);
     let currentIntervalValue = start;
 
     const timer = setInterval(() => {
       const nextIntervalValue = getNextIntervalValue({
         isFloatRange,
-        isDecrease,
-        currentValue: currentIntervalValue,
+        currentValue: Number(currentIntervalValue),
+        decimals,
+        operation,
       });
 
       changeInputValue(
-        isFloatRange ? nextIntervalValue.toFixed(1) : String(nextIntervalValue),
-        intervalStepTime,
-        isFloatRange,
+        nextIntervalValue,
         currentEl,
         nextEl,
       );
 
-      if (nextIntervalValue === end) {
+      if (isIntervalEnd({ nextIntervalValue, end, decimals })) {
         clearInterval(timer);
       }
 
       currentIntervalValue = nextIntervalValue;
     }, intervalStepTime);
-  }
 
-  if (!start && !end) {
-    return <Error errorMessage={ERROR_MESSAGES.emptyStartEndValue} />;
-  }
-
-  const intervalStepTime = getIntervalStepTime({
-    startNumber: start, endNumber: end, duration, isDecrease,
-  });
-
-  if (!intervalStepTime) {
-    return <Error errorMessage={ERROR_MESSAGES.smallDurationValue} />;
-  }
-
-  if (withAnimation && intervalStepTime < SMALL_DURATION_VALUE) {
-    return <Error errorMessage={ERROR_MESSAGES.smallDurationValue} />;
+    intervalRef.current = timer;
   }
 
   useEffect(() => {
-    if (!inputRef.current) {
-      return;
+    if (inputRef.current) {
+      count({ counterEl: inputRef.current });
     }
 
-    count({
-      intervalStepTime,
-      counterEl: inputRef.current,
-    });
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+      if (timeoutRef.current) {
+        clearInterval(timeoutRef.current);
+      }
+    };
   }, []);
 
-  const defaultClassName = 'counter-number';
-  const classNames = className ? `${defaultClassName} ${className}` : defaultClassName;
-  const startLength = String(start).length;
-  const endLength = String(end).length;
-  const maxLength = startLength > endLength ? startLength : endLength;
-  const fontWidth = fontSize * 0.6;
-  const fontHeight = fontSize * 1.15;
-  const width = maxLength * fontWidth;
+  if (!start && !end) {
+    const error = new Error(ERROR_MESSAGES.emptyStartEndValue);
+    // eslint-disable-next-line no-console
+    console.error(error);
+    return <span>{String(error)}</span>;
+  }
+
+  if (
+    intervalStepTime < MINIMAL_INTERVAL_TIME
+    || (withAnimation && intervalStepTime < MINIMAL_ANIMATION_INTERVAL_TIME)
+  ) {
+    const error = new Error(ERROR_MESSAGES.smallDurationValue);
+    // eslint-disable-next-line no-console
+    console.error(error);
+    return <span>{String(error)}</span>;
+  }
 
   return (
     <div
       ref={inputRef}
-      className={classNames}
-      style={{ fontSize, height: fontHeight, width }}
+      className={combineStrings('counter-number', className)}
+      style={{ fontSize, height: fontHeight }}
     >
-      <div className="current" />
-      <div className="next" />
+      <div style={{ height: fontHeight }} className="current" />
+      <div style={{ height: fontHeight }} className="next" />
     </div>
   );
 }

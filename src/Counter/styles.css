@@ -6,7 +6,7 @@
 
 .next,
 .current {
-  position: absolute;
+  line-height: 1;
   transition-property: transform;
   transition-timing-function: linear;
 }

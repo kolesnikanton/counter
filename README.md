@@ -3,7 +3,7 @@ React number increase/decrease animation
 
 * Number increase animation (when start is less than end)
 * Number decrease animation (when start is greater than end)
-* Works with decimal numbers (only with one number after the decimal point)
+* Works with decimal numbers
 * Without repeat
 
 ## Demo
@@ -15,7 +15,8 @@ See demo [HERE](https://antonkolesnik.com/counter/)
 * `duration (required)`: Time in ms to stop the counter
 * `className`: CSS class name to style the counter
 * `fontSize (80 by default)`
-* `withAnimation`: Smooth transition animation (Only with integer)
+* `withAnimation`: Smooth transition animation
+* `decimals`
 
 ![Animation](https://drive.google.com/uc?id=1eWNUINVdZEOpwuDtAEl7JKqskMde3kY3)
 

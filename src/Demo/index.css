@@ -1,7 +1,24 @@
 .demo {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100vh;
   font-family: Helvetica;
+}
+
+.demo button {
+  padding: 0;
+}
+
+.demo input, .demo button {
+  display: block;
+  box-sizing: border-box;
+  height: 24px;
+  margin: 10px;
+  width: 200px;
+  border-radius: 12px;
+}
+
+.demo input {
+  padding-left: 12px;
 }
