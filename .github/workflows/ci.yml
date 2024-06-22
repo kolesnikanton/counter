@@ -1,6 +1,9 @@
 name: ci
 run-name: ${{ github.actor }} Run lint/test/publish
-on: [push]
+on:
+  push:
+    branches:
+      - master
 jobs:
   run-ci:
     runs-on: ubuntu-latest
