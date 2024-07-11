@@ -8,7 +8,7 @@ exports[`render - duration error 1`] = `
 </div>
 `;
 
-exports[`render - with animation 1`] = `
+exports[`render - withAnimation 1`] = `
 <div>
   <div
     class="counter-number"
@@ -16,11 +16,11 @@ exports[`render - with animation 1`] = `
   >
     <div
       class="current"
-      style="height: 92px;"
+      style="height: 92px; transition: transform 500ms; transform: translate(0, 92px);"
     />
     <div
       class="next"
-      style="height: 92px;"
+      style="height: 92px; transition: transform 500ms; transform: translate(0, -92px);"
     />
   </div>
 </div>
@@ -47,6 +47,60 @@ exports[`render 1`] = `
     <div
       class="next"
       style="height: 57.49999999999999px;"
+    />
+  </div>
+</div>
+`;
+
+exports[`render with floats 1`] = `
+<div>
+  <div
+    class="counter-number"
+    style="font-size: 80px; height: 92px;"
+  >
+    <div
+      class="current"
+      style="height: 92px;"
+    />
+    <div
+      class="next"
+      style="height: 92px;"
+    />
+  </div>
+</div>
+`;
+
+exports[`render with floats with decimals 1`] = `
+<div>
+  <div
+    class="counter-number"
+    style="font-size: 80px; height: 92px;"
+  >
+    <div
+      class="current"
+      style="height: 92px;"
+    />
+    <div
+      class="next"
+      style="height: 92px;"
+    />
+  </div>
+</div>
+`;
+
+exports[`render without start 1`] = `
+<div>
+  <div
+    class="counter-number"
+    style="font-size: 80px; height: 92px;"
+  >
+    <div
+      class="current"
+      style="height: 92px;"
+    />
+    <div
+      class="next"
+      style="height: 92px;"
     />
   </div>
 </div>
