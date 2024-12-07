@@ -13,7 +13,19 @@ import {
   ERROR_MESSAGES, MINIMAL_ANIMATION_INTERVAL_TIME, DEFAULT_VALUES, MINIMAL_INTERVAL_TIME,
 } from './constants';
 
-// TODO: Add handleStop
+type CounterT = {
+  duration: number;
+  start?: string;
+  end?: string;
+  className?: string;
+  withAnimation?: boolean;
+  fontSize?: number;
+  decimals?: number;
+  onUpdate?: (nextValue: string) => void;
+  isStart?: boolean | null;
+}
+
+// TODO: Add isLoop
 /* eslint-disable no-param-reassign */
 export default function Counter({
   duration,
@@ -23,29 +35,22 @@ export default function Counter({
   withAnimation,
   fontSize = DEFAULT_VALUES.fontSize,
   decimals: decimalsProp,
-}: {
-  duration: number,
-  start?: string,
-  end?: string,
-  className?: string,
-  withAnimation?: boolean,
-  fontSize?: number,
-  decimals?: number,
-}) {
+  onUpdate,
+  isStart = null,
+}: CounterT) {
   const inputRef = useRef<HTMLDivElement>(null);
   const currentInputValueRef = useRef<string>('');
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Value after point
   const decimals = decimalsProp || getDecimals({ start, end });
-  const isFloatRange = isFloat(end) || isFloat(start);
   const isDecrease = Number(start) > Number(end);
-  const operation = isDecrease ? -1 : 1;
-  const fontHeight = fontSize * 1.15;
   const intervalStepTime = getIntervalStepTime({
     startNumber: start, endNumber: end, duration, isDecrease, decimals,
   });
+  const isFloatRange = isFloat(end) || isFloat(start);
+  const operation = isDecrease ? -1 : 1;
+  const fontHeight = fontSize * 1.15;
   // We can't make it slowly than intervalStepTime / 2,
   // because we will not have time to see the animation
   const ANIMATION_SPEED = intervalStepTime / 2;
@@ -135,7 +140,7 @@ export default function Counter({
     currentEl.innerText = nextInputValue;
   }
 
-  function count({ counterEl }: {
+  function play({ counterEl }: {
     counterEl: HTMLDivElement;
   }) {
     const currentEl = counterEl.children[0] as HTMLDivElement;
@@ -160,6 +165,10 @@ export default function Counter({
         nextEl,
       );
 
+      if (onUpdate) {
+        onUpdate(nextIntervalValue);
+      }
+
       if (isIntervalEnd({ nextIntervalValue, end, decimals })) {
         clearInterval(timer);
       }
@@ -172,7 +181,7 @@ export default function Counter({
 
   useEffect(() => {
     if (inputRef.current) {
-      count({ counterEl: inputRef.current });
+      play({ counterEl: inputRef.current });
     }
 
     return () => {
@@ -183,23 +192,31 @@ export default function Counter({
         clearInterval(timeoutRef.current);
       }
     };
-  }, []);
+  }, [isStart]);
+
+  if (isStart !== null && !isStart) {
+    return null;
+  }
 
   if (!start && !end) {
-    const error = new Error(ERROR_MESSAGES.emptyStartEndValue);
     // eslint-disable-next-line no-console
-    console.error(error);
-    return <span>{String(error)}</span>;
+    console.error(ERROR_MESSAGES.emptyStartEndValue);
+    return <span>{ERROR_MESSAGES.emptyStartEndValue}</span>;
+  }
+
+  if (!intervalStepTime) {
+    // eslint-disable-next-line no-console
+    console.error(ERROR_MESSAGES.incorrectProps);
+    return <span>{ERROR_MESSAGES.incorrectProps}</span>;
   }
 
   if (
     intervalStepTime < MINIMAL_INTERVAL_TIME
     || (withAnimation && intervalStepTime < MINIMAL_ANIMATION_INTERVAL_TIME)
   ) {
-    const error = new Error(ERROR_MESSAGES.smallDurationValue);
     // eslint-disable-next-line no-console
-    console.error(error);
-    return <span>{String(error)}</span>;
+    console.error(ERROR_MESSAGES.smallDurationValue);
+    return <span>{ERROR_MESSAGES.smallDurationValue}</span>;
   }
 
   return (

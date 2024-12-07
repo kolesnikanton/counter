@@ -5,8 +5,10 @@ import Counter from '..';
 test('render', async () => {
   jest.useFakeTimers();
 
+  const onUpdate = jest.fn();
+
   const { container } = render(
-    <Counter fontSize={50} start="2" end="23.5" duration={10000} />,
+    <Counter onUpdate={onUpdate} fontSize={50} start="2" end="23.5" duration={10000} />,
   );
 
   const input1 = container.getElementsByClassName('current')[0] as HTMLDivElement;
@@ -20,6 +22,11 @@ test('render', async () => {
   const nextEl = container.getElementsByClassName('next')[0] as HTMLDivElement;
   expect(nextEl.innerText).toBe(undefined);
 
+  expect(onUpdate).toHaveBeenCalledTimes(215);
+  expect(onUpdate).toHaveBeenNthCalledWith(1, '2.1');
+  expect(onUpdate).toHaveBeenNthCalledWith(2, '2.2');
+  expect(onUpdate).toHaveBeenNthCalledWith(215, '23.5');
+
   expect(container).toMatchSnapshot();
 });
 
@@ -27,7 +34,7 @@ test('render - withAnimation', async () => {
   jest.useFakeTimers();
 
   const { container } = render(
-    <Counter withAnimation fontSize={80} start="200" end="100" duration={100000} />,
+    <Counter withAnimation start="200" end="100" duration={100000} />,
   );
 
   const input1 = container.getElementsByClassName('current')[0] as HTMLDivElement;
@@ -37,9 +44,11 @@ test('render - withAnimation', async () => {
 
   const nextEl = container.getElementsByClassName('next')[0] as HTMLDivElement;
   expect(nextEl.innerText).toBe('100');
+  expect(nextEl.style.transform).toEqual('translate(0, -92px)');
 
   const currentEl = container.getElementsByClassName('current')[0] as HTMLDivElement;
   expect(currentEl.innerText).toBe('101');
+  expect(currentEl.style.transform).toEqual('translate(0, 92px)');
 
   expect(container).toMatchSnapshot();
 });
@@ -107,18 +116,79 @@ test('render without start', async () => {
   expect(container).toMatchSnapshot();
 });
 
-test('render - duration error', async () => {
+test('render without end', async () => {
+  jest.useFakeTimers();
+
   const { container } = render(
-    <Counter fontSize={80} start="101" end="100" duration={1} />,
+    <Counter start="100" duration={100000} />,
   );
+
+  const input1 = container.getElementsByClassName('current')[0] as HTMLDivElement;
+  expect(input1.innerText).toBe('100');
+
+  jest.runAllTimers();
+
+  const input2 = container.getElementsByClassName('current')[0] as HTMLDivElement;
+  expect(input2.innerText).toBe('0');
+
+  const nextEl = container.getElementsByClassName('next')[0] as HTMLDivElement;
+  expect(nextEl.innerText).toBe(undefined);
 
   expect(container).toMatchSnapshot();
 });
 
-test('render - without numbers error', async () => {
+test('render - intervalStepTime error', async () => {
+  const logSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
   const { container } = render(
-    <Counter start="" end="" fontSize={80} duration={100} />,
+    <Counter start="101.321.32" end="100" duration={1} />,
   );
 
-  expect(container).toMatchSnapshot();
+  expect(container).toMatchInlineSnapshot(`
+<div>
+  <span>
+    Incorrect props
+  </span>
+</div>
+`);
+  logSpy.mockRestore();
+});
+
+test('render - duration error', async () => {
+  const logSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+  const { container } = render(
+    <Counter start="101" end="100" duration={1} />,
+  );
+
+  expect(container).toMatchInlineSnapshot(`
+<div>
+  <span>
+    Too small duration value
+  </span>
+</div>
+`);
+  logSpy.mockRestore();
+});
+
+test('render - without numbers error', async () => {
+  const logSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+  const { container } = render(
+    <Counter start="" end="" duration={100} />,
+  );
+
+  expect(container).toMatchInlineSnapshot(`
+<div>
+  <span>
+    Start and end props are empty
+  </span>
+</div>
+`);
+  logSpy.mockRestore();
+});
+
+test('render with isStart', async () => {
+  const { container } = render(
+    <Counter isStart={false} end="100" duration={100000} />,
+  );
+  expect(container).toMatchInlineSnapshot('<div />');
 });

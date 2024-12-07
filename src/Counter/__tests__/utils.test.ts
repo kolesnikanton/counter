@@ -98,7 +98,7 @@ test('getIntervalStepTime', () => {
     isDecrease: false,
     decimals: 1,
   })).toEqual(10);
-  // Operations = (11.00 - 1.00) * 1 * 10 = 100
+  // Operations = (11.00 - 1.00) * 10^1 = 100
   // 1000 / 100 = 10ms
 
   expect(utils.getIntervalStepTime({
@@ -107,9 +107,9 @@ test('getIntervalStepTime', () => {
     endNumber: '11.00',
     isDecrease: false,
     decimals: 2,
-  })).toEqual(5);
-  // Operations (11.00 - 1.00) * 2 * 10 = 200;
-  // 1000 / 200 = 5ms
+  })).toEqual(1);
+  // Operations (11.00 - 1.00) * 10^2 = 1000;
+  // 1000 / 1000 = 1ms
 });
 
 test('isIntervalEnd', () => {
@@ -135,6 +135,12 @@ test('isIntervalEnd', () => {
     nextIntervalValue: '10.0',
     end: '10.00001',
     decimals: 1,
+  })).toBeTruthy();
+
+  expect(utils.isIntervalEnd({
+    nextIntervalValue: '10',
+    end: '10',
+    decimals: 3,
   })).toBeTruthy();
 
   expect(utils.isIntervalEnd({

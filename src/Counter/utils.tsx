@@ -19,8 +19,9 @@ export function getIntervalStepTime({
 
   if (isFloat(endNumber) || isFloat(startNumber)) {
     // Multiply operations by number after point
-    // decimals * 10 - operations after point
-    const operationsWithFloat = operations * decimals * 10;
+    // 10 ** decimals - operations after point
+    const factor = 10 ** decimals;
+    const operationsWithFloat = operations * factor;
     return duration / operationsWithFloat;
   }
 
@@ -32,12 +33,16 @@ export function isIntervalEnd({
   end,
   decimals,
 }: {
-  nextIntervalValue: string,
-  end: string,
-  decimals: number
+  nextIntervalValue: string;
+  end: string;
+  decimals: number;
 }): boolean {
   // For a case where start = *.0 and end = *.01
-  return nextIntervalValue === Number(end).toFixed(decimals);
+  if (isFloat(nextIntervalValue) || isFloat(end)) {
+    return nextIntervalValue === Number(end).toFixed(decimals);
+  }
+
+  return nextIntervalValue === end;
 }
 
 export function getDecimals({ start, end }: {

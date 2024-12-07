@@ -1,13 +1,5 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`render - duration error 1`] = `
-<div>
-  <span>
-    Error: Too small duration value
-  </span>
-</div>
-`;
-
 exports[`render - withAnimation 1`] = `
 <div>
   <div
@@ -23,14 +15,6 @@ exports[`render - withAnimation 1`] = `
       style="height: 92px; transition: transform 500ms; transform: translate(0, -92px);"
     />
   </div>
-</div>
-`;
-
-exports[`render - without numbers error 1`] = `
-<div>
-  <span>
-    Error: Start and end props are empty
-  </span>
 </div>
 `;
 
@@ -71,6 +55,24 @@ exports[`render with floats 1`] = `
 `;
 
 exports[`render with floats with decimals 1`] = `
+<div>
+  <div
+    class="counter-number"
+    style="font-size: 80px; height: 92px;"
+  >
+    <div
+      class="current"
+      style="height: 92px;"
+    />
+    <div
+      class="next"
+      style="height: 92px;"
+    />
+  </div>
+</div>
+`;
+
+exports[`render without end 1`] = `
 <div>
   <div
     class="counter-number"
