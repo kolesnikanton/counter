@@ -1,7 +1,7 @@
 {
   "name": "@antonkolesnik/counter",
   "author": "Anton Kolesnik <kolesnikanton@icloud.com>",
-  "description": "React number increase/decrease animation",
+  "description": "A React library for animating numeric transitions",
   "version": "1.1.0",
   "license": "MIT",
   "main": "lib/index.js",
@@ -20,7 +20,7 @@
   "scripts": {
     "start": "webpack serve",
     "build:types": "tsc --emitDeclarationOnly",
-    "build:files": "npx babel src/Counter --out-dir lib --delete-dir-on-start --extensions .tsx,.js,.snap --ignore src/**/__tests__ --copy-files --no-copy-ignored",
+    "build:files": "npx babel src/Counter --out-dir lib --delete-dir-on-start --extensions .tsx,.js,.ts,.snap --ignore src/**/__tests__ --copy-files --no-copy-ignored",
     "build": "npm run build:files && npm run build:types",
     "lint": "eslint . --ext .js,.tsx,.ts",
     "prepublishOnly": "npm run build",

@@ -13,5 +13,6 @@
     "isolatedModules": true,
     "resolveJsonModule": true,
   },
-  "include": ["src/Counter/**/*"]
+  "include": ["src/Counter/**/*"],
+  "exclude": ["src/Counter/__tests__"]
 }
